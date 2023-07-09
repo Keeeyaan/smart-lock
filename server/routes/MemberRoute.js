@@ -1,4 +1,6 @@
 import express from "express";
+import upload from "../middleware/fileupload.js";
+
 import {
   getAllMembers,
   createMember,
