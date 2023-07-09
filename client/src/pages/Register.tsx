@@ -1,5 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
+import axios from 'axios';
+import { useForm } from 'react-hook-form';
 import Webcam from 'react-webcam';
+
 import { socket } from '../socket';
 
 import ReplayIcon from '@mui/icons-material/Replay';
@@ -9,6 +12,8 @@ const Register = () => {
   const [showWebcam, setShowWebcam] = useState(true);
   const [captureImage, setCaptureImage] = useState<any>(null);
   const [rfid, setRfid] = useState('');
+
+  const { register, handleSubmit } = useForm();
 
   useEffect(() => {
     const handleReceivedId = (id: string) => {
@@ -25,11 +30,20 @@ const Register = () => {
 
   const camRef = useRef<Webcam>(null);
 
-  const webcamCaptureHandler = (event: any) => {
-    event.preventDefault();
+  const webcamCaptureHandler = (e: any) => {
+    e.preventDefault();
     const imageSrc = camRef.current?.getScreenshot();
     setCaptureImage(imageSrc);
     setShowWebcam(false);
+  };
+
+  const handleFormSubmit = async (data: any) => {
+    const formData = new FormData();
+    formData.append('data', JSON.stringify(data));
+    formData.append('image', captureImage);
+    data.image = captureImage;
+    await axios.post('/api/members', data);
+    setRfid('');
   };
 
   return (
@@ -75,13 +89,17 @@ const Register = () => {
               </button>
             </>
           )}
-          <div>
+          <form
+            onSubmit={handleSubmit(handleFormSubmit)}
+            encType="multipart/form-data"
+          >
             <div className="mb-4">
               <label htmlFor="rfid" className="font-semibold text-[1.15rem]">
                 RFID
               </label>
               <input
                 id="rfid"
+                {...register('rfid')}
                 type="text"
                 value={rfid}
                 readOnly
@@ -95,14 +113,21 @@ const Register = () => {
                 </label>
                 <input
                   id="name"
+                  {...register('name', { required: 'This is required.' })}
                   autoComplete="off"
                   type="text"
                   className="block mt-[0.5rem] bg-white border border-solid border-gray-300 h-[2.5rem] w-[18rem] outline-none p-[1rem] rounded"
-                  placeholder="Enter Lastname"
+                  placeholder="Enter member's name"
                 />
               </div>
             </div>
-          </div>
+            <button
+              type="submit"
+              className="bg-blue-500 text-white h-[2.5rem] w-[18rem] rounded font-semibold transition-all duration-[0.3s] ease-in-out hover:bg-blue-600"
+            >
+              Add Member
+            </button>
+          </form>
         </>
       )}
     </>
