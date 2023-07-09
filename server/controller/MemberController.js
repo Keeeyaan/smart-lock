@@ -1,3 +1,5 @@
+import fs from "fs";
+import path from "path";
 import { db } from "../config/database.js";
 
 //GET ALL STUDENTS
@@ -17,14 +19,34 @@ const getMemberByRFID = (req, res) => {
 
 //CREATE STUDENT
 const createMember = (req, res) => {
-  const { rfid, name } = req.body;
+  const { rfid, name, image } = req.body;
 
-  const sql = `INSERT INTO members( rfid, name) VALUES('${username}', '${password}')`;
+  if (!rfid || !name) {
+    return res.status(400).send("Empty fields!");
+  }
+
+  let sql = `INSERT INTO members(rfid, name) VALUES('${rfid}', '${name}')`;
+
+  if (image) {
+    const imagename = `${name.trim()}_${Date.now()}.jpg`;
+    if (!fs.existsSync("./image")) {
+      fs.mkdirSync("./image");
+    }
+
+    //cleanup the image base64 format
+    const base64Data = image.replace(/^data:([A-Za-z-+/]+);base64,/, "");
+    fs.writeFileSync(
+      path.join(`./image/${imagename}`),
+      Buffer.from(base64Data, "base64")
+    );
+    sql = `INSERT INTO members(uid, name, image) VALUES('${rfid}', '${name}', '${imagename}')`;
+  }
 
   db.query(sql, (err, results) => {
+    // console.log(err);
     if (err) return res.status(500).json(err);
     if (results.length !== 0) {
-      res.status(200).json("User Created!");
+      res.status(200).json({ message: "User Created!" });
     } else {
       res.status(404).send([]);
     }
@@ -40,7 +62,7 @@ const updateMember = (req, res) => {
   db.query(sql, (err, results) => {
     if (err) return res.status(500).json(err);
     if (results.length !== 0) {
-      res.status(200).send("User Updated!");
+      res.status(200).json({ message: "User Updated!" });
     } else {
       res.status(404).send([]);
     }
