@@ -7,12 +7,12 @@ const initializeSerial = (io, socket, parser, myPort) => {
     if (data.includes("UID")) {
       const arrData = data.split(": ");
       const UID = arrData[1].replace("\r", "  ");
-      // console.log(UID);
       socket.emit("received-id", UID);
 
       //  Check the rfid in the database
       db.query(`SELECT * FROM members WHERE uid = '${UID}'`, (err, results) => {
-        if (results) {
+        console.log(results);
+        if (results.length !== 0) {
           myPort.write("granted");
         } else {
           myPort.write("denied");
