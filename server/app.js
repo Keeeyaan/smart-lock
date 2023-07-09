@@ -34,9 +34,7 @@ const io = new Server(server, {
 });
 
 myPort.on("open", () => {
-  console.log("Serial port open");
-  // setInterval(() => myPort.write("lock"), 2000);
-  // myPort.write("lock");
+  console.log("Serial port open!");
 });
 
 io.on("connection", (socket) => {
@@ -44,5 +42,5 @@ io.on("connection", (socket) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}!`);
 });
