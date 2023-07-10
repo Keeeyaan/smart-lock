@@ -1,4 +1,5 @@
 import { socket } from '../socket';
+import axios from 'axios';
 
 const Control = ({ isLocked }: { isLocked: boolean }) => {
   return (
