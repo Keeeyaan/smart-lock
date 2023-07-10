@@ -1,8 +1,8 @@
 import express from "express";
-import upload from "../middleware/fileupload.js";
 
 import {
   getAllMembers,
+  getMemberByRFID,
   createMember,
   updateMember,
   deleteMember,
@@ -18,4 +18,5 @@ router
   .put(updateMember)
   .delete(deleteMember);
 
+  router.route("/members/:rfid").get(getMemberByRFID);
 export default router;
