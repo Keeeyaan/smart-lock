@@ -14,7 +14,13 @@ const getAllMembers = (req, res) => {
 
 //GET MEMBER BY RFID
 const getMemberByRFID = (req, res) => {
-  const sql = `SELECT * FROM members WHERE uid = '${UID}'`;
+  const {rfid} = req.params;
+  const sql = `SELECT * FROM members WHERE uid = '${rfid}'`;
+
+  db.query(sql, (err, results) => {
+    if (err) return res.status(400).json(err);
+    res.status(200).json(results);
+  });
 };
 
 //CREATE STUDENT
@@ -29,21 +35,21 @@ const createMember = (req, res) => {
 
   if (image) {
     const imagename = `${name.trim()}_${Date.now()}.jpg`;
-    if (!fs.existsSync("./image")) {
-      fs.mkdirSync("./image");
+    if (!fs.existsSync("./client/public/image")) {
+      fs.mkdirSync("./client/public/image");
     }
 
     //cleanup the image base64 format
     const base64Data = image.replace(/^data:([A-Za-z-+/]+);base64,/, "");
     fs.writeFileSync(
-      path.join(`./image/${imagename}`),
+      path.join(`./client/public/image/${imagename}`),
       Buffer.from(base64Data, "base64")
     );
     sql = `INSERT INTO members(uid, name, image) VALUES('${rfid}', '${name}', '${imagename}')`;
   }
 
   db.query(sql, (err, results) => {
-    // console.log(err);
+    console.log(err);
     if (err) return res.status(500).json(err);
     if (results.length !== 0) {
       res.status(200).json({ message: "User Created!" });
@@ -105,4 +111,4 @@ const deleteMember = (req, res) => {
 //   });
 // };
 
-export { getAllMembers, createMember, updateMember, deleteMember };
+export { getAllMembers, getMemberByRFID, createMember, updateMember, deleteMember };
