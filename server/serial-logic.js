@@ -10,7 +10,7 @@ const initializeSerial = (io, socket, parser, myPort) => {
       socket.emit("received-id", UID);
 
       //  Check the rfid in the database
-      db.query(`SELECT * FROM members WHERE uid = '${UID}'`, (err, results) => {
+      db.query(`SELECT * FROM members WHERE uid = '${UID.trim()}'`, (err, results) => {
         console.log(results);
         if (results.length !== 0) {
           myPort.write("granted");
