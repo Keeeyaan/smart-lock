@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
+import Card from '../components/Card';
+
 const Member = () => {
   const [members, setMembers] = useState([]);
 
@@ -23,34 +25,47 @@ const Member = () => {
   }, []);
 
   return (
-    <table className="text-center text-md h-auto w-full border border-black">
-      <thead className=" border border-black">
-        <tr>
-          <th className="py-3">ID</th>
-          <th>RFID</th>
-          <th>Name</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {members.map((member: any) => (
-          <tr key={member.id} className="border border-black">
-            <td className="">{member.id}</td>
-            <td>{member.uid}</td>
-            <td>{member.name}</td>
-            <td className="p-4">
-              <select
-                defaultValue={member.permission}
-                className="px-4 py-1 font-normal text-gray-700 border border-gray-300 rounded outline-none"
-              >
-                <option value="restrict">Restrict</option>
-                <option value="unrestrict">Unrestrict</option>
-              </select>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    // <table className="text-center text-md h-auto w-full border border-black">
+    //   <thead className=" border border-black">
+    //     <tr>
+    //       <th className="py-3">ID</th>
+    //       <th>RFID</th>
+    //       <th>Name</th>
+    //       <th>Action</th>
+    //     </tr>
+    //   </thead>
+    //   <tbody>
+    //     {members.map((member: any) => (
+    //       <tr key={member.id} className="border border-black">
+    //         <td className="">{member.id}</td>
+    //         <td>{member.uid}</td>
+    //         <td>{member.name}</td>
+    //         <td className="p-4">
+    //           <select
+    //             defaultValue={member.permission}
+    //             className="px-4 py-1 font-normal text-gray-700 border border-gray-300 rounded outline-none"
+    //           >
+    //             <option value="restrict">Restrict</option>
+    //             <option value="unrestrict">Unrestrict</option>
+    //           </select>
+    //         </td>
+    //       </tr>
+    //     ))}
+    //   </tbody>
+    // </table>
+    <div className="flex gap-5 flex-wrap">
+      {members.map((member: any) => {
+        return (
+          <Card
+            key={member.id}
+            rfid={member.uid}
+            name={member.name}
+            image={member.image}
+            permission={member.permission}
+          />
+        );
+      })}
+    </div>
   );
 };
 
