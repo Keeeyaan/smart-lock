@@ -12,6 +12,7 @@ axios.defaults.baseURL = 'http://localhost:8000';
 
 const App = () => {
   const [isLocked, setIsLocked] = useState(true);
+  const [rfidAccess, setRfidAccess] = useState([]);
 
   useEffect(() => {
     const handleReceivedLockStatus = (status: string) => {
@@ -22,6 +23,7 @@ const App = () => {
         setIsLocked(false);
       }
     };
+
     const handleReceivedAccess = (access: string) => {
       console.log(access);
       if (access.trim() === 'granted') {
@@ -29,12 +31,19 @@ const App = () => {
       }
     };
 
+    const handleReceivedId = async (id: string) => {
+      const response = await axios.get(`/api/members/${id}`);
+      setRfidAccess(response.data);
+    };
+
+    socket.on('received-id', handleReceivedId);
     socket.on('received-lock-status', handleReceivedLockStatus);
     socket.on('received-access', handleReceivedAccess);
 
     return () => {
       socket.off('received-lock-status', handleReceivedLockStatus);
       socket.off('received-access', handleReceivedAccess);
+      socket.off('received-id', handleReceivedId);
     };
   }, [socket]);
 
@@ -42,7 +51,10 @@ const App = () => {
     <>
       <Layout>
         <Routes>
-          <Route path="/" element={<Control isLocked={isLocked} />} />
+          <Route
+            path="/"
+            element={<Control isLocked={isLocked} rfidAccess={rfidAccess} />}
+          />
           <Route path="/members" element={<Member />} />
           <Route path="/register" element={<Register />} />
         </Routes>
