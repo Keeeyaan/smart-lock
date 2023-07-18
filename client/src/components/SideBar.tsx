@@ -4,6 +4,7 @@ import { Sidebar, Menu, MenuItem, menuClasses } from 'react-pro-sidebar';
 import PeopleIcon from '@mui/icons-material/People';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import TuneIcon from '@mui/icons-material/Tune';
+import TerminalIcon from '@mui/icons-material/Terminal';
 
 const SideBar = () => {
   const { pathname } = useLocation();
@@ -42,6 +43,13 @@ const SideBar = () => {
             component={<Link to="" />}
           >
             Control
+          </MenuItem>
+          <MenuItem
+            active={pathname === '/logs' ? true : false}
+            icon={<TerminalIcon />}
+            component={<Link to="logs" />}
+          >
+            Logs
           </MenuItem>
           <MenuItem
             active={pathname === '/members' ? true : false}
