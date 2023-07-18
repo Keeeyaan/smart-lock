@@ -4,9 +4,7 @@ import { Routes, Route } from 'react-router-dom';
 import axios from 'axios';
 
 import Layout from './components/Layout';
-import Control from './pages/Control';
-import Member from './pages/Member';
-import Register from './pages/Register';
+import { Control, Member, Logs, Register } from './pages';
 
 axios.defaults.baseURL = 'http://localhost:8000';
 
@@ -34,6 +32,18 @@ const App = () => {
     const handleReceivedId = async (id: string) => {
       const response = await axios.get(`/api/members/${id}`);
       setRfidAccess(response.data);
+
+      if (response.data.length !== 0) {
+        await axios.post('/api/logs', {
+          date: new Date,
+          message: `[${response.data[0].uid}]: ${response.data[0].name} has opened the lock.`,
+        });
+      } else {
+        await axios.post('/api/logs', {
+          date: new Date,
+          message: `[${response.data[0].uid}]: unknown rfid tried to open the lock.`,
+        });
+      }
     };
 
     socket.on('received-id', handleReceivedId);
@@ -55,6 +65,7 @@ const App = () => {
             path="/"
             element={<Control isLocked={isLocked} rfidAccess={rfidAccess} />}
           />
+          <Route path="/logs" element={<Logs />} />
           <Route path="/members" element={<Member />} />
           <Route path="/register" element={<Register />} />
         </Routes>
